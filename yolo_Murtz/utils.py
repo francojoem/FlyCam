@@ -1,10 +1,10 @@
-
 # from yolodemo import *
-# fbRange = [6200,6800]
+
 
 ####### Basic Hello drone #######
 
 import time
+import numpy as np
 import dronekit_sitl
 # sitl = dronekit_sitl.start_default()
 # connection_string = sitl.connection_string()
@@ -13,32 +13,40 @@ from dronekit import connect, VehicleMode, LocationGlobalRelative
 from pymavlink import mavutil
 import argparse
 
+###Variables###
+w, h = 360, 240
+pid_yaw = [0.5,0.45,0.001]
+#pid_yaw = [4, 0.02, 0]
+pid_pitch = [0.65, 0.025, 7.5]
+#pid_pitch = [1.3, 0.05, 15]
+Vx, Vy, Vz = 0, 0, 0
+fbRange = [206200, 236000]
 
 
-# def connectMyCopter():
-#     """
-#     To connect copter to script
-#     """
-parser = argparse.ArgumentParser(description='commands')
-parser.add_argument('--connect') #used in terminal like '--connect 127.0.0.1:14550'
-args = parser.parse_args()
+def connectMyCopter():
+    """
+    To connect copter to script
+    """
+    parser = argparse.ArgumentParser(description='commands')
+    parser.add_argument('--connect') #used in terminal like '--connect 127.0.0.1:14550'
+    args = parser.parse_args()
 
-connection_string = args.connect
-sitl = None
+    connection_string = args.connect
+    sitl = None
 
-#Start SITL if no connection string specified
-if not connection_string:
-    import dronekit_sitl
-    sitl = dronekit_sitl.start_default()
-    connection_string = sitl.connection_string()
+    #Start SITL if no connection string specified
+    if not connection_string:
+        import dronekit_sitl
+        sitl = dronekit_sitl.start_default()
+        connection_string = sitl.connection_string()
 
 
-print("Connecting to vehicle on: %s" % (connection_string))
-vehicle = connect(connection_string, wait_ready=True)
-    
-    #return vehicle
+    print("Connecting to vehicle on: %s" % (connection_string))
+    vehicle = connect(connection_string, wait_ready=True)
 
-    
+    return vehicle
+
+
 # # Vehicle attributes (state)
 # print("Get some vehicle attribute values:")
 # print(" GPS: %s" % vehicle.gps_0)
@@ -49,7 +57,7 @@ vehicle = connect(connection_string, wait_ready=True)
 # print(" Mode: %s" % vehicle.mode.name)    # settable
 
 
-def arm_and_takeoff(aTargetAltitude):
+def arm_and_takeoff(vehicle, aTargetAltitude):
     """
     Arms vehicle and fly to aTargetAltitude.
     """
@@ -83,7 +91,8 @@ def arm_and_takeoff(aTargetAltitude):
             break
         time.sleep(1)
 
-def set_velocity_body(Vx,Vy,Vz):
+
+def set_velocity_body(vehicle,Vx,Vy,Vz):
     msg = vehicle.message_factory.set_position_target_local_ned_encode(
         0,       # time_boot_ms (not used)
         0, 0,    # target system, target component
@@ -100,37 +109,61 @@ def set_velocity_body(Vx,Vy,Vz):
 
 
 
-def track_person(vehicle, info, w, pid, pError):
+def track_person(info, w, pid_pitch, pid_yaw, pPitch_Error, pYaw_Error): #pYaw_Error- previous yaw error
     """
     Track a person based on obj detection
     """
     area = info[1]
-    x,y = info[0]
-    
-    error = x-w//2 #w/2 is the centre
-    
+    pitch_errorSum = 0
+    yaw_errorSum = 0
+
+    ##PID for Yaw
+    yaw_error = info[0][0] - w // 2  #w/2 is the centre of the screen
+    yaw_errorSum = yaw_errorSum + yaw_error
+    yaw_speed = pid_yaw[0] * yaw_error + pid_yaw[1] * (yaw_error - pYaw_Error) + pid_yaw[2] * yaw_errorSum
+    yaw_speed = int(np.clip(yaw_speed, -100,100))  #to limit val. Vals outside are clipped to interval edges.
+
+
+    ##PID for Pitch
     if area > fbRange[0] and area < fbRange[1]:
-        fb = 0
-    elif area < fbRange[0]:
-        fb = 20
-    elif area > fbRange[1]:
-        fb = -20
+        #Vx = 0
+        pitch_error = 0 
+        pPitch_Error = 0
+    elif area < fbRange[0]:  #drone is too far
+        pitch_error = fbRange[0] - info[1]  
+    elif area > fbRange[1]:  #drone is too close
+        pitch_error = fbRange[1] - info[1]  
+    
+    pitch_errorSum = pitch_errorSum + pitch_error
+    pitch_speed = pid_pitch[0] * pitch_error + pid_pitch[1] * (pitch_error - pPitch_Error) + pid_pitch[2] * pitch_errorSum
+    pitch_speed = int(np.clip(pitch_speed, -200, 200))
+
+
+    #Setting the velocities 
+    if info[0][0] != 0:
+        Vx = pitch_speed
+        Vy = yaw_speed
+    else:
+        Vx, Vy, Vz = 0,0,0
+        pitch_error = 0
+        yaw_error = 0
+
+    print(f"Pitch={Vx},Yaw={Vy}")
+    #set_velocity_body(Vx, Vy, Vz)
+
+    return pitch_error,yaw_error
 
 
 
-
-
-
-
-arm_and_takeoff(10)
+#arm_and_takeoff(10)
 
 # print("Returning to Launch")
 # vehicle.mode = VehicleMode("RTL")
 
 # Close vehicle object before exiting script
-vehicle.close()
+# vehicle.close()
 
-# Shut down simulator if it was started
-if sitl:
-    sitl.stop()
-    print("Completed")
+# # Shut down simulator if it was started
+# if sitl:
+#     sitl.stop()
+#     print("Completed")

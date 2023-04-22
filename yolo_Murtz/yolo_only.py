@@ -87,9 +87,9 @@ def findObjects(outputs,img):
         except:
             pass
 
-        # fps = 1.0/(time.time() - start_time) #calculation of fps
-        # #print("FPS:",int(fps))
-        # cv2.putText(img, str(int(fps)), (50,50), cv2.FONT_HERSHEY_SIMPLEX,1, (255,0,0),2)
+        fps = 1.0/(time.time() - start_time) #calculation of fps
+        #print("FPS:",int(fps))
+        cv2.putText(img, str(int(fps)), (50,50), cv2.FONT_HERSHEY_SIMPLEX,1, (255,0,0),2)
 
 
     if len(listArea) != 0:
@@ -101,27 +101,27 @@ def findObjects(outputs,img):
 
 
 
-# while True:
-#     success, img = cap.read()
-#     start_time = time.time()
+while True:
+    success, img = cap.read()
+    start_time = time.time()
 
-#     blob = cv2.dnn.blobFromImage(img,1/255,(whT,whT),[0,0,0],1,crop=False)#network cannot handle plain img
-#     #Need to be converted into 'blob'
-#     net.setInput(blob)
+    blob = cv2.dnn.blobFromImage(img,1/255,(whT,whT),[0,0,0],1,crop=False)#network cannot handle plain img
+    #Need to be converted into 'blob'
+    net.setInput(blob)
 
-#     layerNames = net.getLayerNames() #names of all layers in network
-#     #print(layerNames)
-#     outindex = [[i] for i in net.getUnconnectedOutLayers()]
-#     outTensor = np.array(outindex) #just using net.getUnconnectedOutLayers() was not working; so converted into tensor
-#     #print(outTensor)
-#     outputNames = [layerNames[i[0]-1] for i in outTensor] #gives ['yolo_139', 'yolo_150', 'yolo_161']
+    layerNames = net.getLayerNames() #names of all layers in network
+    #print(layerNames)
+    outindex = [[i] for i in net.getUnconnectedOutLayers()]
+    outTensor = np.array(outindex) #just using net.getUnconnectedOutLayers() was not working; so converted into tensor
+    #print(outTensor)
+    outputNames = [layerNames[i[0]-1] for i in outTensor] #gives ['yolo_139', 'yolo_150', 'yolo_161']
 
-#     outputs = net.forward(outputNames) #gives (507, 85) (8112, 85) (2028, 85)
+    outputs = net.forward(outputNames) #gives (507, 85) (8112, 85) (2028, 85)
     #there are three output layers
 
     # print(outputs[0][0])
 
-    #findObjects(outputs, img)
+    findObjects(outputs, img)
     #img, info = findObjects(outputs, img)
     #print("Center", info[0], "Area", info[1])
 
