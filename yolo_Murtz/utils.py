@@ -14,12 +14,14 @@ from pymavlink import mavutil
 import argparse
 
 ###Variables###
-w,h = 360,240
-pid = [0.5,0.45,0.001]
-Vx,Vy,Vz = 0,0,0
-fbRange = [6200,6800]
-pitch_errorSum = 0
-yaw_errorSum = 0
+w, h = 360, 240
+pid_yaw = [0.5,0.45,0.001]
+#pid_yaw = [4, 0.02, 0]
+pid_pitch = [0.65, 0.025, 7.5]
+#pid_pitch = [1.3, 0.05, 15]
+Vx, Vy, Vz = 0, 0, 0
+fbRange = [206200, 236000]
+
 
 def connectMyCopter():
     """
@@ -107,16 +109,18 @@ def set_velocity_body(vehicle,Vx,Vy,Vz):
 
 
 
-def track_person(vehicle, info, w, pid, pPitch_Error, pYaw_Error):
+def track_person(info, w, pid_pitch, pid_yaw, pPitch_Error, pYaw_Error): #pYaw_Error- previous yaw error
     """
     Track a person based on obj detection
     """
     area = info[1]
+    pitch_errorSum = 0
+    yaw_errorSum = 0
 
     ##PID for Yaw
     yaw_error = info[0][0] - w // 2  #w/2 is the centre of the screen
     yaw_errorSum = yaw_errorSum + yaw_error
-    yaw_speed = pid[0] * yaw_error + pid[1] * (yaw_error - pYaw_Error) + pid[2] * yaw_errorSum
+    yaw_speed = pid_yaw[0] * yaw_error + pid_yaw[1] * (yaw_error - pYaw_Error) + pid_yaw[2] * yaw_errorSum
     yaw_speed = int(np.clip(yaw_speed, -100,100))  #to limit val. Vals outside are clipped to interval edges.
 
 
@@ -126,13 +130,13 @@ def track_person(vehicle, info, w, pid, pPitch_Error, pYaw_Error):
         pitch_error = 0 
         pPitch_Error = 0
     elif area < fbRange[0]:  #drone is too far
-        pitch_error = info[1] - fbRange[0]
+        pitch_error = fbRange[0] - info[1]  
     elif area > fbRange[1]:  #drone is too close
-        pitch_error = info[1] - fbRange[1]
+        pitch_error = fbRange[1] - info[1]  
     
     pitch_errorSum = pitch_errorSum + pitch_error
-    pitch_speed = pid[0] * pitch_error + pid[1] * (pitch_error - pPitch_Error) + pid[2] * pitch_errorSum
-    pitch_speed = int(np.clip(pitch_speed, -5, 5))
+    pitch_speed = pid_pitch[0] * pitch_error + pid_pitch[1] * (pitch_error - pPitch_Error) + pid_pitch[2] * pitch_errorSum
+    pitch_speed = int(np.clip(pitch_speed, -200, 200))
 
 
     #Setting the velocities 
@@ -140,11 +144,11 @@ def track_person(vehicle, info, w, pid, pPitch_Error, pYaw_Error):
         Vx = pitch_speed
         Vy = yaw_speed
     else:
-        Vx, Vy, Vz = 0
+        Vx, Vy, Vz = 0,0,0
         pitch_error = 0
         yaw_error = 0
 
-    print(Vx,Vy)
+    print(f"Pitch={Vx},Yaw={Vy}")
     #set_velocity_body(Vx, Vy, Vz)
 
     return pitch_error,yaw_error
