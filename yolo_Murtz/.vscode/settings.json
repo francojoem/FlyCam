@@ -1,3 +1,5 @@
 {
-    "python.formatting.provider": "yapf"
+    "python.formatting.provider": "yapf",
+    "nrf-connect.topdir": "d:\\NordicSemi\\v1.9.1",
+    "nrf-connect.toolchain.path": "d:\\NordicSemi\\v1.9.1\\toolchain"
 }
