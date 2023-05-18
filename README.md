@@ -8,7 +8,7 @@ Unmanned aerial vehicles (UAVs) have revealed their unprecedented potential for 
 
 - **NVIDIA Jetson Nano**: A small, powerful computer for embedded AI systems and edge computing that delivers the power of modern AI.
 
-![NVIDIA Jetson Nano](https://developer.nvidia.com/sites/default/files/akamai/embedded/images/jetsonNano/overview/jetson-nano-dev-kit-top-r6-HR.png)
+![NVIDIA Jetson Nano](https://th.bing.com/th/id/OIP.gmfgNdh_UvXTs04-i1PSLAHaF3?pid=ImgDet&rs=1))
 
 - **Pixhawk PX4 2.4.8**: An advanced autopilot system designed by the PX4 open-hardware project. It features advanced processor and sensor technology from ST Microelectronics® and a NuttX real-time operating system, delivering incredible performance, flexibility, and reliability for controlling any autonomous vehicle.
 
