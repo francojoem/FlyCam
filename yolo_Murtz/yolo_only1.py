@@ -84,4 +84,5 @@ def findObjects(outputs,img):
         try:
             cv2.putText(
                 img, f'{classNames[classIds[i]].upper()} {int(confs[i]*100)}%',
-                (x,
+                (x, y),
+                cv2.FONT_HERSHEY_

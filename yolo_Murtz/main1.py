@@ -5,13 +5,12 @@ from yolodemo import *
 cv2.cuda.setDevice(0)
 
 # Load the YOLO model
-net = cv2.dnn.readNetFromDarknet("yolov3.cfg", "yolov3.weights")
+net = cv2.dnn.readNetFromDarknet("yolov4.cfg", "yolov4.weights")
 net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
-#net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
 net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
-#net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
+
 # Set the input image size
-net.setInputSize(whT, whT)
+net.setInputShape(3, whT, whT)
 
 # Set the input scale factor
 net.setInputScale(1.0 / 255)
@@ -23,32 +22,32 @@ net.setMean(0, 0, 0)
 net.setSwapRB(True)
 
 while True:
-    ########## 1- detect person ##########
-    success, img = cap.read()
+ ########## 1- detect person ##########
+ success, img = cap.read()
 
-    # Convert the image to a blob
-    blob = cv2.dnn.blobFromImage(img, 1.0 / 255, (whT, whT), (0, 0, 0), 1, crop=False)
+ # Convert the image to a blob
+ blob = cv2.dnn.blobFromImage(img, 1.0 / 255, (whT, whT), (0, 0, 0), 1, crop=False)
 
-    # Forward the blob through the network
-    outputs = net.forward(["yolo_139", "yolo_150", "yolo_161"])
+ # Forward the blob through the network
+ outputs = net.forward(["yolo_139", "yolo_150", "yolo_161"])
 
-    # Find the objects in the output
-    img, info = findObjects(outputs, img)
+ # Find the objects in the output
+ img, info = findObjects(outputs, img)
 
-    # Print the center and area of each object
-    for i in range(len(info)):
-        print("Center", info[i][0], "Area", info[i][1])
-
-
+ # Print the center and area of each object
+ for i in range(len(info)):
+ print("Center", info[i][0], "Area", info[i][1])
 
 
-    ########## 2- track person ##########
-    pPitch_Error, pYaw_Error = track_person(info, w, pid_pitch, pid_yaw, pPitch_Error, pYaw_Error)
-    
 
-    cv2.imshow('Image', img)
-    if cv2.waitKey(1) & 0xFF == ord('q'): 
-        break
+
+ ########## 2- track person ##########
+ pPitch_Error, pYaw_Error = track_person(info, w, pid_pitch, pid_yaw, pPitch_Error, pYaw_Error)
+ 
+
+ cv2.imshow('Image', img)
+ if cv2.waitKey(1) & 0xFF == ord('q'): 
+ break
 
 cap.release()
 cv2.destroyAllWindows()
