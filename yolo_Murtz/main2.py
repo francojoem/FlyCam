@@ -12,7 +12,7 @@ net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 #net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
 # Create a model object from the net object
-model = cv2::dnn::Model(net)
+model = cv2.dnn.Model(net) # Use . instead of ::
 
 # Set the input image size
 model.setInputSize(whT, whT)
@@ -44,7 +44,7 @@ while True:
 
     # Print the center and area of each object
     for i in range(len(info)):
-        print("Center", info[i][0], "Area", info[i][1])
+        print("Center", info[i][0], "Area", info[i][1]) # Indent this line
 
     ########## 2- track person ##########
     pPitch_Error, pYaw_Error = track_person(info, w, pid_pitch, pid_yaw, pPitch_Error, pYaw_Error)
