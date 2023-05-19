@@ -11,7 +11,7 @@ net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
 # Set the input image size
 whT=416
-net.setInputShape((3, whT, whT))
+net.setInputShape((whT, whT))
 
 # Set the input scale factor
 net.setInputScale(1.0 / 255)
