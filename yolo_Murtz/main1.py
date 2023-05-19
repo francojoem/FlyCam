@@ -10,8 +10,8 @@ net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
 net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
 # Set the input image size
-whT=416
-net.setInputShape((whT, whT))
+whT = 416 # Replace whT with an integer value that represents the width and height of the input image
+net.setInputSize((whT, whT))
 
 # Set the input scale factor
 net.setInputScale(1.0 / 255)
@@ -27,7 +27,7 @@ while True:
  success, img = cap.read()
 
  # Convert the image to a blob
- blob = cv2.dnn.blobFromImage(img, 1.0 / 255, (whT, whT), (0, 0, 0), 1, crop=False)
+ blob = cv2.dnn.blobFromImage(img, 1.0 / 255, (whT, whT), (0, 0, 0), True, crop=False)
 
  # Forward the blob through the network
  outputs = net.forward(["yolo_139", "yolo_150", "yolo_161"])
