@@ -12,7 +12,7 @@ net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 #net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
 # Create a model object from the net object
-model = cv::dnn::Model(net)
+model = cv2::dnn::Model(net)
 
 # Set the input image size
 model.setInputSize(whT, whT)
