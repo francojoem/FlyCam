@@ -13,7 +13,7 @@ net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 whT = 416 # Replace whT with an integer value that represents the width and height of the input image
 
 # Set the swapRB flag
-#net.setSwapRB(True)
+net.setSwapRB(True)
 
 while True:
  ########## 1- detect person ##########
