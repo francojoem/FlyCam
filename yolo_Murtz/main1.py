@@ -36,7 +36,7 @@ while True:
 
  # Print the center and area of each object
  for i in range(len(info)):
- print("Center", info[i][0], "Area", info[i][1])
+    print("Center", info[i][0], "Area", info[i][1])
 
 
 
