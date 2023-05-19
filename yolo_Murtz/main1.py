@@ -10,6 +10,7 @@ net.setPreferableBackend(cv2.dnn.DNN_BACKEND_CUDA)
 net.setPreferableTarget(cv2.dnn.DNN_TARGET_CUDA)
 
 # Set the input image size
+whT=416
 net.setInputShape((3, whT, whT))
 
 # Set the input scale factor
