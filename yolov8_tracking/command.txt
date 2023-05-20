@@ -1,0 +1,1 @@
+python3 track.py --source 0 --tracking-method strongsort --yolo-model yolov8s.engine --classes 1
